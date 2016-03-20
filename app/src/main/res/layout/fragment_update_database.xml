@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/addEditScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="1"
+        android:orientation="vertical"
+        android:useDefaultMargins="true" >
+
+        <EditText
+            android:id="@+id/editId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringId"
+            android:imeOptions="actionNext"
+            android:inputType="text" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/editName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringName"
+            android:imeOptions="actionNext"
+            android:inputType="text" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/editCourseCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringCourseCode"
+            android:imeOptions="actionNext"
+            android:inputType="text" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/editStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringStart"
+            android:imeOptions="actionNext"
+            android:inputType="text" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/editEnd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/stringEnd"
+            android:imeOptions="actionNext"
+            android:inputType="text" >
+        </EditText>
+
+        <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/stringSaveCourse" >
+        </Button>
+    </GridLayout>
+
+</ScrollView>
