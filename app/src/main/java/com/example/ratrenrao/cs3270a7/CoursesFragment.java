@@ -74,7 +74,7 @@ public class CoursesFragment extends android.app.Fragment
         setHasOptionsMenu(true); // this fragment has menu items to display
 
         // set text to display when there are no courses
-        setEmptyText(getResources().getString(R.string.no_courses));
+        setEmptyText(getResources().getString(R.string.stringNoResult));
 
         // get ListView reference and configure ListView
         courseListView = getListView();
@@ -158,7 +158,7 @@ public class CoursesFragment extends android.app.Fragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_course_list_menu, menu);
+        inflater.inflate(R.menu.course_menu, menu);
     }
 
     // handle choice from options menu
@@ -198,14 +198,14 @@ public class CoursesFragment extends android.app.Fragment
         new getCourseAssignments().execute("");
     }
 
-    private CanvasObjects.Course[] jsonParse(String rawJson){
+    private Course[] jsonParse(String rawJson){
         GsonBuilder gsonb = new GsonBuilder();
         Gson gson = gsonb.create();
 
-        CanvasObjects.Course[] courses = null;
+        Course[] courses = null;
 
         try{
-            courses = gson.fromJson(rawJson, CanvasObjects.Course[].class);
+            courses = gson.fromJson(rawJson, Course[].class);
         }catch (Exception e){
 
         }
@@ -218,7 +218,7 @@ public class CoursesFragment extends android.app.Fragment
         DatabaseFragment databaseConnector =
                 new DatabaseFragment(getActivity());
 
-        String AUTH_TOKEN = Authorization.AUTH_TOKEN;
+        String AUTH_TOKEN = DatabaseFragment.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override
@@ -251,8 +251,8 @@ public class CoursesFragment extends android.app.Fragment
             databaseConnector.open();
 
             try{
-                CanvasObjects.Course[] courses = jsonParse(result);
-                for (CanvasObjects.Course course : courses) {
+                Course[] courses = jsonParse(result);
+                for (Course course : courses) {
                     databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             }catch (Exception e){
@@ -268,7 +268,7 @@ public class CoursesFragment extends android.app.Fragment
         DatabaseFragment databaseConnector =
                 new DatabaseFragment(getActivity());
 
-        String AUTH_TOKEN = Authorization.AUTH_TOKEN;
+        String AUTH_TOKEN = DatabaseFragment.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override
@@ -302,8 +302,8 @@ public class CoursesFragment extends android.app.Fragment
             databaseConnector.open();
 
             try{
-                CanvasObjects.Course[] courses = jsonParse(result);
-                for (CanvasObjects.Course course : courses) {
+                Course[] courses = jsonParse(result);
+                for (Course course : courses) {
                     databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             }catch (Exception e){
@@ -312,5 +312,40 @@ public class CoursesFragment extends android.app.Fragment
             updateCourseList();
             databaseConnector.close();
         }
+    }
+
+    protected class Course
+    {
+        protected String id;
+        protected String sis_course_id;
+        protected String name;
+        protected String course_code;
+        protected String account_id;
+        protected String start_at;
+        protected String end_at;
+        protected String syllabus_body;
+        protected String needs_grading_count;
+        protected Enrollment[] enrollments;
+        protected Calendar calendar;
+        protected Term term;
+    }
+
+    protected class Term{
+        protected String id;
+        protected String name;
+        protected String start_at;
+        protected String end_at;
+    }
+
+    protected class Calendar{
+        protected String ics;
+    }
+
+    protected class Enrollment{
+        protected String type;
+        protected String role;
+        protected String computed_final_score;
+        protected String computed_current_score;
+        protected String computed_final_grade;
     }
 }

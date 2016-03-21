@@ -14,6 +14,7 @@ public class DatabaseFragment{
 
     // database name
     private static final String DATABASE_NAME = "Courses";
+    public static String AUTH_TOKEN = "";
 
     private SQLiteDatabase database; // for interacting with the database
     private DatabaseOpenHelper databaseOpenHelper; // creates the database

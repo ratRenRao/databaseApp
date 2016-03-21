@@ -56,10 +56,11 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         return view;
     }
 
-    // called after edit completed so course can be redisplayed
-    public void onUpdateCompleted(long rowID)
+    // callback method implemented by MainActivity
+    public interface UpdateListener
     {
-
+        // called after edit completed so course can be redisplayed
+        public void onUpdate(long rowID);
     }
 
     private UpdateListener listener;
@@ -90,8 +91,6 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         listener = null;
     }
 
-
-
     // responds to event generated when user saves a course
     View.OnClickListener savecourseButtonClicked = new View.OnClickListener()
     {
@@ -121,7 +120,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                                 imm.hideSoftInputFromWindow(
                                         getView().getWindowToken(), 0);
 
-                                listener.onUpdateCompleted(rowID);
+                                listener.onUpdate(rowID);
                             }
                         }; // end AsyncTask
 
@@ -138,8 +137,8 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                             {
                                 AlertDialog.Builder builder =
                                         new AlertDialog.Builder(getActivity());
-                                builder.setMessage(R.string.error_message);
-                                builder.setPositiveButton(R.string.ok, null);
+                                builder.setMessage(R.string.stringError);
+                                builder.setPositiveButton("OK", null);
                                 return builder.create();
                             }
                         };

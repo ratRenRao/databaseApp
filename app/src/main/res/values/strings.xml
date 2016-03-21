@@ -7,7 +7,6 @@
     <string name="stringCourseCodeLabel">Course Code:</string>
     <string name="stringStartLabel">Starts At:</string>
     <string name="stringEndLabel">Ends At:</string>
-    <string name="stringOk">OK</string>
     <string name="stringCancel">Cancel</string>
     <string name="stringAdd">Add</string>
     <string name="stringImport">Import</string>

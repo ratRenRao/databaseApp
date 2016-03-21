@@ -20,7 +20,7 @@ import android.widget.TextView;
 public class InfoFragment extends android.app.Fragment
 {
         // callback methods implemented by MainActivity
-        public interface DetailsFragmentListener
+        public interface InfoFragmentListener
         {
                 // called when a course is deleted
                 public void onCourseDelete();
@@ -29,7 +29,7 @@ public class InfoFragment extends android.app.Fragment
                 public void onEditCourse(Bundle arguments);
         }
 
-        private DetailsFragmentListener listener;
+        private InfoFragmentListener listener;
 
         private long rowID = -1; // selected course's rowID
         private TextView idTextView; // displays course's id
@@ -38,15 +38,15 @@ public class InfoFragment extends android.app.Fragment
         private TextView startTextView; // displays course's start at
         private TextView endTextView; // displays course's end at
 
-        // set DetailsFragmentListener when fragment attached
+        // set InfoFragmentListener when fragment attached
         @Override
         public void onAttach(Activity activity)
         {
                 super.onAttach(activity);
-                listener = (DetailsFragmentListener) activity;
+                listener = (InfoFragmentListener) activity;
         }
 
-        // remove DetailsFragmentListener when fragment detached
+        // remove InfoFragmentListener when fragment detached
         @Override
         public void onDetach()
         {
@@ -54,7 +54,7 @@ public class InfoFragment extends android.app.Fragment
                 listener = null;
         }
 
-        // called when DetailsFragmentListener's view needs to be created
+        // called when InfoFragmentListener's view needs to be created
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState)
@@ -109,7 +109,7 @@ public class InfoFragment extends android.app.Fragment
         public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
         {
                 super.onCreateOptionsMenu(menu, inflater);
-                inflater.inflate(R.menu.fragment_details_menu, menu);
+                inflater.inflate(R.menu.info_menu, menu);
         }
 
         // handle menu item selections
@@ -140,8 +140,8 @@ public class InfoFragment extends android.app.Fragment
         // performs database query outside GUI thread
         private class LoadCourseTask extends AsyncTask<Long, Object, Cursor>
         {
-                DatabaseConnector databaseConnector =
-                        new DatabaseConnector(getActivity());
+                DatabaseFragment databaseConnector =
+                        new DatabaseFragment(getActivity());
 
                 // open database & get Cursor representing specified course's data
                 @Override
@@ -196,19 +196,19 @@ public class InfoFragment extends android.app.Fragment
                                 AlertDialog.Builder builder =
                                         new AlertDialog.Builder(getActivity());
 
-                                builder.setTitle(R.string.confirm_title);
-                                builder.setMessage(R.string.confirm_message);
+                                builder.setTitle(R.string.stringConfirm);
+                                builder.setMessage(R.string.stringConfirmMessage);
 
                                 // provide an OK button that simply dismisses the dialog
-                                builder.setPositiveButton(R.string.button_delete,
+                                builder.setPositiveButton(R.string.stringDelete,
                                         new DialogInterface.OnClickListener()
                                         {
                                                 @Override
                                                 public void onClick(
                                                         DialogInterface dialog, int button)
                                                 {
-                                                        final DatabaseConnector databaseConnector =
-                                                                new DatabaseConnector(getActivity());
+                                                        final DatabaseFragment databaseConnector =
+                                                                new DatabaseFragment(getActivity());
 
                                                         // AsyncTask deletes course and notifies listener
                                                         AsyncTask<Long, Object, Object> deleteTask =
@@ -234,7 +234,7 @@ public class InfoFragment extends android.app.Fragment
                                         } // end anonymous inner class
                                 ); // end call to method setPositiveButton
 
-                                builder.setNegativeButton(R.string.button_cancel, null);
+                                builder.setNegativeButton(R.string.stringCancel, null);
                                 return builder.create(); // return the AlertDialog
                         }
                 }; // end DialogFragment anonymous inner class

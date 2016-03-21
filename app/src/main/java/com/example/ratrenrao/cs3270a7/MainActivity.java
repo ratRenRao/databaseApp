@@ -12,10 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity implements CoursesFragment.CourseListFragmentListener,
-    InfoFragment.InfoFragmentListener,
-    UpdateDatabaseFragment.UpdateDatabaseFragmentListener
-{
+public class MainActivity extends AppCompatActivity implements
+        CoursesFragment.CourseListFragmentListener,
+        InfoFragment.InfoFragmentListener,
+        UpdateDatabaseFragment.UpdateListener {
 
     public static final String ROW_ID = "row_id";
 
@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements CoursesFragment.C
     @Override
     public void onCourseSelected(long rowID)
     {
-        super.onCourseSelected();
         displayCourse(rowID, R.id.fragmentMainContainer);
     }
 
@@ -129,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements CoursesFragment.C
 
     // update GUI after new course or updated course saved
     @Override
-    public void onAddEditCompleted(long rowID)
+    public void onUpdate(long rowID)
     {
         getFragmentManager().popBackStack(); // removes top of back stack
         getFragmentManager().popBackStack(); // removes top of back stack
