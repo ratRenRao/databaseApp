@@ -4,14 +4,12 @@
     <item
         android:id="@+id/action_add"
         android:orderInCategory="0"
-        android:showAsAction="ifRoom|withText"
         android:title="@string/stringAdd"
         android:icon="@android:drawable/ic_menu_add"/>
 
     <item
         android:id="@+id/action_import"
         android:orderInCategory="0"
-        android:showAsAction="ifRoom|withText"
         android:title="@string/stringImport"
         android:icon="@android:drawable/ic_menu_set_as"/>
 

@@ -1,22 +1,24 @@
 package com.example.ratrenrao.cs3270a7;
 
-
 import android.app.Activity;
+import android.app.ListFragment;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,31 +32,32 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CoursesFragment extends android.app.Fragment
+public class CoursesFragment extends ListFragment
 {
     // callback methods implemented by MainActivity
     public interface CourseListFragmentListener
     {
         // called when user selects a course
-        public void onCourseSelected(long rowID);
+        void onCourseSelected(long rowID);
 
-        public void onCourseLongSelected(long rowID);
+        void onCourseLongSelected(long rowID);
 
         // called when user decides to add a course
-        public void onAddCourse();
+        void onAddCourse();
     }
 
-    private CourseListFragmentListener listener;
+    private CourseListFragmentListener courseListListener;
 
     private ListView courseListView; // the ListActivity's ListView
     private CursorAdapter courseAdapter; // adapter for ListView
 
     // set courseListFragmentListener when fragment attached
     @Override
-    public void onAttach(Activity activity)
+    public void onAttach(Context context)
     {
-        super.onAttach(activity);
-        listener = (CourseListFragmentListener) activity;
+        super.onAttach(context);
+        if (context instanceof Activity)
+            courseListListener = (CourseListFragmentListener) context;
     }
 
 
@@ -62,7 +65,7 @@ public class CoursesFragment extends android.app.Fragment
     public void onDetach()
     {
         super.onDetach();
-        listener = null;
+        courseListListener = null;
     }
 
     // called after View is created
@@ -97,14 +100,14 @@ public class CoursesFragment extends android.app.Fragment
         public void onItemClick(AdapterView<?> parent, View view,
                                 int position, long id)
         {
-            listener.onCourseSelected(id); // pass selection to MainActivity
+            courseListListener.onCourseSelected(id); // pass selection to MainActivity
         }
     }; // end viewcourseListener
 
     AdapterView.OnItemLongClickListener viewAssignmentListener = new AdapterView.OnItemLongClickListener() {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-            listener.onCourseLongSelected(id);
+            courseListListener.onCourseLongSelected(id);
             return true;
         }
     };
@@ -120,8 +123,8 @@ public class CoursesFragment extends android.app.Fragment
     // performs database query outside GUI thread
     private class GetCourseTask extends AsyncTask<Object, Object, Cursor>
     {
-        DatabaseFragment databaseConnector =
-                new DatabaseFragment(getActivity());
+        DatabaseHelper databaseConnector =
+                new DatabaseHelper(getActivity());
 
         // open database and return Cursor for all courses
         @Override
@@ -168,7 +171,7 @@ public class CoursesFragment extends android.app.Fragment
         switch (item.getItemId())
         {
             case R.id.action_add:
-                listener.onAddCourse();
+                courseListListener.onAddCourse();
                 return true;
             case R.id.action_import:
                 onImportCourses();
@@ -215,10 +218,10 @@ public class CoursesFragment extends android.app.Fragment
 
     public class getCanvasCourses extends AsyncTask<String, Integer, String>
     {
-        DatabaseFragment databaseConnector =
-                new DatabaseFragment(getActivity());
+        DatabaseHelper databaseConnector =
+                new DatabaseHelper(getActivity());
 
-        String AUTH_TOKEN = DatabaseFragment.AUTH_TOKEN;
+        String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override
@@ -265,10 +268,10 @@ public class CoursesFragment extends android.app.Fragment
 
     public class getCourseAssignments extends AsyncTask<String, Integer, String>
     {
-        DatabaseFragment databaseConnector =
-                new DatabaseFragment(getActivity());
+        DatabaseHelper databaseConnector =
+                new DatabaseHelper(getActivity());
 
-        String AUTH_TOKEN = DatabaseFragment.AUTH_TOKEN;
+        String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override

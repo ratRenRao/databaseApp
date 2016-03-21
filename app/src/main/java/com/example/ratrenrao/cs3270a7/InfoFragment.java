@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
@@ -23,27 +24,28 @@ public class InfoFragment extends android.app.Fragment
         public interface InfoFragmentListener
         {
                 // called when a course is deleted
-                public void onCourseDelete();
+                void onCourseDelete();
 
                 // called to pass Bundle of course's info for editing
-                public void onEditCourse(Bundle arguments);
+                void onEditCourse(Bundle arguments);
         }
 
-        private InfoFragmentListener listener;
+        private InfoFragmentListener infoListener;
 
         private long rowID = -1; // selected course's rowID
-        private TextView idTextView; // displays course's id
-        private TextView nameTextView; // displays course's name
-        private TextView courseCodeTextView; // displays course's course code
-        private TextView startTextView; // displays course's start at
-        private TextView endTextView; // displays course's end at
+        private TextView textId; // displays course's id
+        private TextView textName; // displays course's name
+        private TextView textCourseCode; // displays course's course code
+        private TextView textStart; // displays course's start at
+        private TextView textEnd; // displays course's end at
 
         // set InfoFragmentListener when fragment attached
         @Override
-        public void onAttach(Activity activity)
+        public void onAttach(Context context)
         {
-                super.onAttach(activity);
-                listener = (InfoFragmentListener) activity;
+                super.onAttach(context);
+                if (context instanceof Activity)
+                    infoListener = (InfoFragmentListener) context;
         }
 
         // remove InfoFragmentListener when fragment detached
@@ -51,7 +53,7 @@ public class InfoFragment extends android.app.Fragment
         public void onDetach()
         {
                 super.onDetach();
-                listener = null;
+                infoListener = null;
         }
 
         // called when InfoFragmentListener's view needs to be created
@@ -80,11 +82,11 @@ public class InfoFragment extends android.app.Fragment
                 setHasOptionsMenu(true); // this fragment has menu items to display
 
                 // get the EditTexts
-                idTextView = (TextView) view.findViewById(R.id.textIdValue);
-                nameTextView = (TextView) view.findViewById(R.id.textNameValue);
-                courseCodeTextView = (TextView) view.findViewById(R.id.textCourseCodeValue);
-                startTextView = (TextView) view.findViewById(R.id.textStartValue);
-                endTextView = (TextView) view.findViewById(R.id.textEndValue);
+                textId = (TextView) view.findViewById(R.id.textIdValue);
+                textName = (TextView) view.findViewById(R.id.textNameValue);
+                textCourseCode = (TextView) view.findViewById(R.id.textCourseCodeValue);
+                textStart = (TextView) view.findViewById(R.id.textStartValue);
+                textEnd = (TextView) view.findViewById(R.id.textEndValue);
                 return view;
         }
 
@@ -118,18 +120,18 @@ public class InfoFragment extends android.app.Fragment
         {
                 switch (item.getItemId())
                 {
-                        case R.id.action_edit:
+                        case R.id.edit:
                                 // create Bundle containing course data to edit
                                 Bundle arguments = new Bundle();
                                 arguments.putLong(MainActivity.ROW_ID, rowID);
-                                arguments.putCharSequence("id", idTextView.getText());
-                                arguments.putCharSequence("name", nameTextView.getText());
-                                arguments.putCharSequence("course_code", courseCodeTextView.getText());
-                                arguments.putCharSequence("start_at", startTextView.getText());
-                                arguments.putCharSequence("end_at", endTextView.getText());
-                                listener.onEditCourse(arguments); // pass Bundle to listener
+                                arguments.putCharSequence("id", textId.getText());
+                                arguments.putCharSequence("name", textName.getText());
+                                arguments.putCharSequence("course_code", textCourseCode.getText());
+                                arguments.putCharSequence("start_at", textStart.getText());
+                                arguments.putCharSequence("end_at", textEnd.getText());
+                                infoListener.onEditCourse(arguments); // pass Bundle to infoListener
                                 return true;
-                        case R.id.action_delete:
+                        case R.id.delete:
                                 deleteCourse();
                                 return true;
                 }
@@ -140,15 +142,15 @@ public class InfoFragment extends android.app.Fragment
         // performs database query outside GUI thread
         private class LoadCourseTask extends AsyncTask<Long, Object, Cursor>
         {
-                DatabaseFragment databaseConnector =
-                        new DatabaseFragment(getActivity());
+                DatabaseHelper databaseHelper =
+                        new DatabaseHelper(getActivity());
 
                 // open database & get Cursor representing specified course's data
                 @Override
                 protected Cursor doInBackground(Long... params)
                 {
-                        databaseConnector.open();
-                        return databaseConnector.getOneCourse(params[0]);
+                        databaseHelper.open();
+                        return databaseHelper.getOneCourse(params[0]);
                 }
 
                 // use the Cursor returned from the doInBackground method
@@ -166,14 +168,14 @@ public class InfoFragment extends android.app.Fragment
                         int endIndex = result.getColumnIndex("end_at");
 
                         // fill TextViews with the retrieved data
-                        idTextView.setText(result.getString(idIndex));
-                        nameTextView.setText(result.getString(nameIndex));
-                        courseCodeTextView.setText(result.getString(courseCodeIndex));
-                        startTextView.setText(result.getString(startIndex));
-                        endTextView.setText(result.getString(endIndex));
+                        textId.setText(result.getString(idIndex));
+                        textName.setText(result.getString(nameIndex));
+                        textCourseCode.setText(result.getString(courseCodeIndex));
+                        textStart.setText(result.getString(startIndex));
+                        textEnd.setText(result.getString(endIndex));
 
                         result.close(); // close the result cursor
-                        databaseConnector.close(); // close database connection
+                        databaseHelper.close(); // close database connection
                 } // end method onPostExecute
         } // end class LoadcourseTask
 
@@ -207,10 +209,10 @@ public class InfoFragment extends android.app.Fragment
                                                 public void onClick(
                                                         DialogInterface dialog, int button)
                                                 {
-                                                        final DatabaseFragment databaseConnector =
-                                                                new DatabaseFragment(getActivity());
+                                                        final DatabaseHelper databaseConnector =
+                                                                new DatabaseHelper(getActivity());
 
-                                                        // AsyncTask deletes course and notifies listener
+                                                        // AsyncTask deletes course and notifies infoListener
                                                         AsyncTask<Long, Object, Object> deleteTask =
                                                                 new AsyncTask<Long, Object, Object>()
                                                                 {
@@ -224,18 +226,17 @@ public class InfoFragment extends android.app.Fragment
                                                                         @Override
                                                                         protected void onPostExecute(Object result)
                                                                         {
-                                                                                listener.onCourseDelete();
+                                                                                infoListener.onCourseDelete();
                                                                         }
                                                                 }; // end new AsyncTask
 
                                                         // execute the AsyncTask to delete course at rowID
-                                                        deleteTask.execute(new Long[] { rowID });
+                                                        deleteTask.execute(new Long[]{rowID});
                                                 } // end method onClick
                                         } // end anonymous inner class
-                                ); // end call to method setPositiveButton
+                                ).setNegativeButton(R.string.stringCancel, null); // end call to method setPositiveButton
 
-                                builder.setNegativeButton(R.string.stringCancel, null);
                                 return builder.create(); // return the AlertDialog
                         }
-                }; // end DialogFragment anonymous inner class
-} // end class DetailsFragment
+                };
+}

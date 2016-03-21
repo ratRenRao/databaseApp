@@ -5,10 +5,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,7 +50,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         // set Save course Button's event listener
         Button buttonSave =
                 (Button) view.findViewById(R.id.buttonSave);
-        buttonSave.setOnClickListener(savecourseButtonClicked);
+        buttonSave.setOnClickListener(saveCourseButtonClicked);
         return view;
     }
 
@@ -60,7 +58,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
     public interface UpdateListener
     {
         // called after edit completed so course can be redisplayed
-        public void onUpdate(long rowID);
+        void onUpdate(long rowID);
     }
 
     private UpdateListener listener;
@@ -77,10 +75,11 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
     // set AddEditFragmentListener when Fragment attached
     @Override
-    public void onAttach(Activity activity)
+    public void onAttach(Context context)
     {
-        super.onAttach(activity);
-        listener = (UpdateListener) activity;
+        super.onAttach(context);
+        if (context instanceof Activity)
+            listener = (UpdateListener) context;
     }
 
     // remove AddEditFragmentListener when Fragment detached
@@ -92,7 +91,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
     }
 
     // responds to event generated when user saves a course
-    View.OnClickListener savecourseButtonClicked = new View.OnClickListener()
+    View.OnClickListener saveCourseButtonClicked = new View.OnClickListener()
     {
         @Override
         public void onClick(View v)
@@ -106,7 +105,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                             @Override
                             protected Object doInBackground(Object... params)
                             {
-                                savecourse(); // save course to the database
+                                saveCourse(); // save course to the database
                                 return null;
                             }
 
@@ -149,11 +148,11 @@ public class UpdateDatabaseFragment extends android.app.Fragment
     }; // end OnClickListener savecourseButtonClicked
 
     // saves course information to the database
-    private void savecourse()
+    private void saveCourse()
     {
         // get DatabaseConnector to interact with the SQLite database
-        DatabaseFragment databaseConnector =
-                new DatabaseFragment(getActivity());
+        DatabaseHelper databaseConnector =
+                new DatabaseHelper(getActivity());
 
         if (courseInfoBundle == null)
         {
@@ -173,7 +172,6 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                     courseCodeEditText.getText().toString(),
                     startEditText.getText().toString(),
                     endEditText.getText().toString());
-
         }
     } // end method savecourse
 } // end class AddEditFragment

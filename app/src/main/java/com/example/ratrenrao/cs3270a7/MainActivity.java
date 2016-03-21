@@ -2,14 +2,7 @@ package com.example.ratrenrao.cs3270a7;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -52,38 +45,37 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume()
     {
         super.onResume();
-
     }
 
     // display DetailsFragment for selected course
     @Override
-    public void onCourseSelected(long rowID)
+    public void onCourseSelected(long rowId)
     {
-        displayCourse(rowID, R.id.fragmentMainContainer);
+        displayCourse(rowId, R.id.fragmentMainContainer);
     }
 
     @Override
-    public void onCourseLongSelected(long rowID) { displayAssignments(rowID, R.id.fragmentMainContainer); }
+    public void onCourseLongSelected(long rowId) { displayAssignments(rowId, R.id.fragmentMainContainer); }
 
     // display a course
-    private void displayAssignments(long rowID, int viewID){
+    private void displayAssignments(long rowId, int viewId){
         CoursesFragment clf = new CoursesFragment();
         clf.onGetImportAssignments();
     }
 
-    private void displayCourse(long rowID, int viewID)
+    private void displayCourse(long rowId, int viewId)
     {
         InfoFragment infoFragment = new InfoFragment();
 
-        // specify rowID as an argument to the DetailsFragment
+        // specify rowId as an argument to the DetailsFragment
         Bundle arguments = new Bundle();
-        arguments.putLong(ROW_ID, rowID);
+        arguments.putLong(ROW_ID, rowId);
         infoFragment.setArguments(arguments);
 
         // use a FragmentTransaction to display the DetailsFragment
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(viewID, infoFragment);
+        transaction.replace(viewId, infoFragment);
         transaction.addToBackStack(null);
         transaction.commit(); // causes DetailsFragment to display
     }
@@ -92,11 +84,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAddCourse()
     {
-        displayAddEditFragment(R.id.fragmentMainContainer, null);
+        displayUpdateFragment(R.id.fragmentMainContainer, null);
     }
 
     // display fragment for adding a new or editing an existing course
-    private void displayAddEditFragment(int viewID, Bundle arguments)
+    private void displayUpdateFragment(int viewId, Bundle arguments)
     {
         UpdateDatabaseFragment updateDatabaseFragment = new UpdateDatabaseFragment();
 
@@ -106,10 +98,11 @@ public class MainActivity extends AppCompatActivity implements
         // use a FragmentTransaction to display the AddEditFragment
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(viewID, updateDatabaseFragment);
+        transaction.replace(viewId, updateDatabaseFragment);
         transaction.addToBackStack(null);
         transaction.commit(); // causes AddEditFragment to display
     }
+
     // return to course list when displayed course deleted
     @Override
     public void onCourseDelete()
@@ -123,12 +116,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onEditCourse(Bundle arguments)
     {
-        displayAddEditFragment(R.id.fragmentMainContainer, arguments);
+        displayUpdateFragment(R.id.fragmentMainContainer, arguments);
     }
 
     // update GUI after new course or updated course saved
     @Override
-    public void onUpdate(long rowID)
+    public void onUpdate(long rowId)
     {
         getFragmentManager().popBackStack(); // removes top of back stack
         getFragmentManager().popBackStack(); // removes top of back stack
