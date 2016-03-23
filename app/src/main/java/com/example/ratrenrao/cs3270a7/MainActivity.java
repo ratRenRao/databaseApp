@@ -4,7 +4,6 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-
 public class MainActivity extends AppCompatActivity implements
         CoursesFragment.CourseListFragmentListener,
         InfoFragment.InfoFragmentListener,
@@ -39,6 +38,15 @@ public class MainActivity extends AppCompatActivity implements
             transaction.commit(); // causes courseListFragment to display
         }
     }
+
+/*    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.course_menu, menu);
+        return true;
+    }
+    */
 
     // called when MainActivity resumes
     @Override

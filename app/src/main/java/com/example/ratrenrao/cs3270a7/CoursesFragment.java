@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,10 +27,6 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class CoursesFragment extends ListFragment
 {
     // callback methods implemented by MainActivity
@@ -156,7 +151,6 @@ public class CoursesFragment extends ListFragment
         super.onStop();
     }
 
-    // display this fragment's menu items
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
@@ -178,7 +172,7 @@ public class CoursesFragment extends ListFragment
                 return true;
         }
 
-        return super.onOptionsItemSelected(item); // call super's method
+        return super.onOptionsItemSelected(item);
     }
 
     // update data set
