@@ -17,16 +17,15 @@ import android.widget.EditText;
 
 public class UpdateDatabaseFragment extends android.app.Fragment
 {
-    // called when Fragment's view needs to be created
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         super.onCreateView(inflater, container, savedInstanceState);
-        setRetainInstance(true); // save fragment across config changes
-        setHasOptionsMenu(true); // fragment has menu items to display
+        setRetainInstance(true);
+        setHasOptionsMenu(true);
 
-        // inflate GUI and get references to EditTexts
         View view = inflater.inflate(R.layout.fragment_update_database, container, false);
 
         idEditText = (EditText) view.findViewById(R.id.editId);
@@ -35,7 +34,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         startEditText = (EditText) view.findViewById(R.id.editStart);
         endEditText = (EditText) view.findViewById(R.id.editEnd);
 
-        courseInfoBundle = getArguments(); // null if creating new course
+        courseInfoBundle = getArguments();
 
         if (courseInfoBundle != null)
         {
@@ -47,33 +46,28 @@ public class UpdateDatabaseFragment extends android.app.Fragment
             endEditText.setText(courseInfoBundle.getString("end_at"));
         }
 
-        // set Save course Button's event listener
         Button buttonSave =
                 (Button) view.findViewById(R.id.buttonSave);
         buttonSave.setOnClickListener(saveCourseButtonClicked);
         return view;
     }
 
-    // callback method implemented by MainActivity
     public interface UpdateListener
     {
-        // called after edit completed so course can be redisplayed
         void onUpdate(long rowID);
     }
 
     private UpdateListener listener;
 
-    private long rowID; // database row ID of the course
-    private Bundle courseInfoBundle; // arguments for editing a course
+    private long rowID;
+    private Bundle courseInfoBundle;
 
-    // EditTexts for course information
     private EditText idEditText;
     private EditText nameEditText;
     private EditText courseCodeEditText;
     private EditText startEditText;
     private EditText endEditText;
 
-    // set AddEditFragmentListener when Fragment attached
     @Override
     public void onAttach(Context context)
     {
@@ -82,7 +76,6 @@ public class UpdateDatabaseFragment extends android.app.Fragment
             listener = (UpdateListener) context;
     }
 
-    // remove AddEditFragmentListener when Fragment detached
     @Override
     public void onDetach()
     {
@@ -90,7 +83,6 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         listener = null;
     }
 
-    // responds to event generated when user saves a course
     View.OnClickListener saveCourseButtonClicked = new View.OnClickListener()
     {
         @Override
@@ -98,21 +90,19 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         {
             if (nameEditText.getText().toString().trim().length() != 0)
             {
-                // AsyncTask to save course, then notify listener
                 AsyncTask<Object, Object, Object> savecourseTask =
                         new AsyncTask<Object, Object, Object>()
                         {
                             @Override
                             protected Object doInBackground(Object... params)
                             {
-                                saveCourse(); // save course to the database
+                                saveCourse();
                                 return null;
                             }
 
                             @Override
                             protected void onPostExecute(Object result)
                             {
-                                // hide soft keyboard
                                 InputMethodManager imm = (InputMethodManager)
                                         getActivity().getSystemService(
                                                 Context.INPUT_METHOD_SERVICE);
@@ -121,12 +111,10 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
                                 listener.onUpdate(rowID);
                             }
-                        }; // end AsyncTask
+                        };
 
-                // save the course to the database using a separate thread
                 savecourseTask.execute((Object[]) null);
-            }
-            else // required course name is blank, so display error dialog
+            } else
             {
                 DialogFragment errorSaving =
                         new DialogFragment()
@@ -144,13 +132,11 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
                 errorSaving.show(getFragmentManager(), "error saving course");
             }
-        } // end method onClick
-    }; // end OnClickListener savecourseButtonClicked
+        }
+    };
 
-    // saves course information to the database
     private void saveCourse()
     {
-        // get DatabaseConnector to interact with the SQLite database
         DatabaseHelper databaseConnector =
                 new DatabaseHelper(getActivity());
 
@@ -163,8 +149,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                     startEditText.getText().toString(),
                     endEditText.getText().toString()
             );
-        }
-        else
+        } else
         {
             databaseConnector.updateCourse(rowID,
                     idEditText.getText().toString(),
@@ -173,5 +158,5 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                     startEditText.getText().toString(),
                     endEditText.getText().toString());
         }
-    } // end method savecourse
-} // end class AddEditFragment
+    }
+}
