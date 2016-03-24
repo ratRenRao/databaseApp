@@ -11,19 +11,19 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHelper
+class DatabaseHelper
 {
 
-    public static String AUTH_TOKEN = "";
+    public static final String AUTH_TOKEN = "";
     private static final String DATABASE_NAME = "Courses";
 
     private SQLiteDatabase db;
-    private DatabaseOpenHelper databaseOpenHelper;
+    private final DatabaseOpenHelper databaseOpenHelper;
 
     public DatabaseHelper(Context context)
     {
         databaseOpenHelper =
-                new DatabaseOpenHelper(context, DATABASE_NAME, null, 1);
+                new DatabaseOpenHelper(context);
     }
 
     public SQLiteDatabase open() throws SQLException
@@ -48,9 +48,9 @@ public class DatabaseHelper
         newCourse.put("start_at", start);
         newCourse.put("end_at", end);
 
-        open(); // open the db
+        open();
         long _id = db.insert("courses", null, newCourse);
-        close(); // close the db
+        close();
         return _id;
     }
 
@@ -89,10 +89,9 @@ public class DatabaseHelper
 
     private class DatabaseOpenHelper extends SQLiteOpenHelper
     {
-        public DatabaseOpenHelper(Context context, String name,
-                                  SQLiteDatabase.CursorFactory factory, int version)
+        public DatabaseOpenHelper(Context context)
         {
-            super(context, name, factory, version);
+            super(context, DatabaseHelper.DATABASE_NAME, null, 1);
         }
 
         @Override

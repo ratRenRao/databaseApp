@@ -12,7 +12,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String ROW_ID = "row_id";
 
-    CoursesFragment coursesFragment;
+    private CoursesFragment coursesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,30 +35,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-    }
-
-    @Override
     public void onCourseSelected(long rowId)
     {
-        displayCourse(rowId, R.id.fragmentMainContainer);
+        displayCourse(rowId);
     }
 
     @Override
     public void onCourseLongSelected(long rowId)
     {
-        displayAssignments(rowId, R.id.fragmentMainContainer);
+        displayAssignments();
     }
 
-    private void displayAssignments(long rowId, int viewId)
+    private void displayAssignments()
     {
         CoursesFragment clf = new CoursesFragment();
         clf.onGetImportAssignments();
     }
 
-    private void displayCourse(long rowId, int viewId)
+    private void displayCourse(long rowId)
     {
         InfoFragment infoFragment = new InfoFragment();
 
@@ -68,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(viewId, infoFragment);
+        transaction.replace(R.id.fragmentMainContainer, infoFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -76,10 +70,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAddCourse()
     {
-        displayUpdateFragment(R.id.fragmentMainContainer, null);
+        displayUpdateFragment(null);
     }
 
-    private void displayUpdateFragment(int viewId, Bundle arguments)
+    private void displayUpdateFragment(Bundle arguments)
     {
         UpdateDatabaseFragment updateDatabaseFragment = new UpdateDatabaseFragment();
 
@@ -88,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(viewId, updateDatabaseFragment);
+        transaction.replace(R.id.fragmentMainContainer, updateDatabaseFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -104,11 +98,11 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onEditCourse(Bundle arguments)
     {
-        displayUpdateFragment(R.id.fragmentMainContainer, arguments);
+        displayUpdateFragment(arguments);
     }
 
     @Override
-    public void onUpdate(long rowId)
+    public void onUpdate()
     {
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();

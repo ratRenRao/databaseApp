@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">CS3270A7</string>
     <string name="action_settings">Settings</string>
+
     <string name="stringIdLabel">Id:</string>
     <string name="stringNameLabel">Name:</string>
     <string name="stringCourseCodeLabel">Course Code:</string>
@@ -14,12 +15,10 @@
     <string name="stringDelete">Delete</string>
     <string name="stringSaveCourse">Save Course</string>
     <string name="stringId">Id (Required)</string>
-    <string name="stringName">Name</string>
+    <string name="stringName">Name (Required)</string>
     <string name="stringCourseCode">Course Code</string>
     <string name="stringStart">Starts At</string>
     <string name="stringEnd">Ends At</string>
-    <string name="stringState">State</string>
-    <string name="stringZip">Zip</string>
     <string name="stringNoResult">No Courses</string>
     <string name="stringError">You must enter a course name</string>
     <string name="stringConfirmMessage">This will permanently delete the course</string>

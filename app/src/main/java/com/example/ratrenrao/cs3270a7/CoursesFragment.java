@@ -22,8 +22,8 @@ import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -40,7 +40,6 @@ public class CoursesFragment extends ListFragment
 
     private CourseListFragmentListener courseListListener;
 
-    private ListView courseListView;
     private CursorAdapter courseAdapter;
 
     @Override
@@ -67,7 +66,7 @@ public class CoursesFragment extends ListFragment
 
         setEmptyText(getResources().getString(R.string.stringNoResult));
 
-        courseListView = getListView();
+        ListView courseListView = getListView();
         courseListView.setOnItemClickListener(viewCourseListener);
         courseListView.setOnItemLongClickListener(viewAssignmentListener);
         courseListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
@@ -80,7 +79,7 @@ public class CoursesFragment extends ListFragment
         setListAdapter(courseAdapter);
     }
 
-    AdapterView.OnItemClickListener viewCourseListener = new AdapterView.OnItemClickListener()
+    private final AdapterView.OnItemClickListener viewCourseListener = new AdapterView.OnItemClickListener()
     {
         @Override
         public void onItemClick(AdapterView<?> parent, View view,
@@ -90,7 +89,7 @@ public class CoursesFragment extends ListFragment
         }
     };
 
-    AdapterView.OnItemLongClickListener viewAssignmentListener = new AdapterView.OnItemLongClickListener()
+    private final AdapterView.OnItemLongClickListener viewAssignmentListener = new AdapterView.OnItemLongClickListener()
     {
         @Override
         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
@@ -109,7 +108,7 @@ public class CoursesFragment extends ListFragment
 
     private class GetCourseTask extends AsyncTask<Object, Object, Cursor>
     {
-        DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseConnector =
                 new DatabaseHelper(getActivity());
 
         @Override
@@ -167,7 +166,7 @@ public class CoursesFragment extends ListFragment
         new GetCourseTask().execute((Object[]) null);
     }
 
-    public void onImportCourses()
+    private void onImportCourses()
     {
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
@@ -191,7 +190,7 @@ public class CoursesFragment extends ListFragment
         try
         {
             courses = gson.fromJson(rawJson, Course[].class);
-        } catch (Exception e)
+        } catch (Exception ignored)
         {
 
         }
@@ -201,10 +200,10 @@ public class CoursesFragment extends ListFragment
 
     public class getCanvasCourses extends AsyncTask<String, Integer, String>
     {
-        DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseConnector =
                 new DatabaseHelper(getActivity());
 
-        String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
+        final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override
@@ -226,9 +225,6 @@ public class CoursesFragment extends ListFragment
                                 new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         rawJSON = br.readLine();
                 }
-            } catch (MalformedURLException e)
-            {
-                Log.d("test", e.getMessage());
             } catch (IOException e)
             {
                 Log.d("test", e.getMessage());
@@ -250,7 +246,7 @@ public class CoursesFragment extends ListFragment
                 {
                     databaseConnector.insertCourse(course.id, course.name, course.courseCode, course.start, course.end);
                 }
-            } catch (Exception e)
+            } catch (Exception ignored)
             {
 
             }
@@ -261,10 +257,10 @@ public class CoursesFragment extends ListFragment
 
     public class getCourseAssignments extends AsyncTask<String, Integer, String>
     {
-        DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseConnector =
                 new DatabaseHelper(getActivity());
 
-        String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
+        final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
         String rawJSON = "";
 
         @Override
@@ -273,7 +269,7 @@ public class CoursesFragment extends ListFragment
             try
             {
                 Log.d("Test", params[0]);
-                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + params + "/assignments");
+                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + Arrays.toString(params) + "/assignments");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + AUTH_TOKEN);
@@ -287,9 +283,6 @@ public class CoursesFragment extends ListFragment
                                 new BufferedReader(new InputStreamReader(conn.getInputStream()));
                         rawJSON = br.readLine();
                 }
-            } catch (MalformedURLException e)
-            {
-                Log.d("test", e.getMessage());
             } catch (IOException e)
             {
                 Log.d("test", e.getMessage());
@@ -311,7 +304,7 @@ public class CoursesFragment extends ListFragment
                 {
                     databaseConnector.insertCourse(course.id, course.name, course.courseCode, course.start, course.end);
                 }
-            } catch (Exception e)
+            } catch (Exception ignored)
             {
 
             }
@@ -320,15 +313,15 @@ public class CoursesFragment extends ListFragment
         }
     }
 
-    protected class Course
+    class Course
     {
-        protected String id;
+        String id;
         protected String sisCourseId;
-        protected String name;
-        protected String courseCode;
+        String name;
+        String courseCode;
         protected String accountId;
-        protected String start;
-        protected String end;
+        String start;
+        String end;
         protected String syllabusBody;
         protected String gradingCount;
         protected Enrollment[] enrollments;

@@ -54,7 +54,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
     public interface UpdateListener
     {
-        void onUpdate(long rowID);
+        void onUpdate();
     }
 
     private UpdateListener listener;
@@ -83,7 +83,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
         listener = null;
     }
 
-    View.OnClickListener saveCourseButtonClicked = new View.OnClickListener()
+    private final View.OnClickListener saveCourseButtonClicked = new View.OnClickListener()
     {
         @Override
         public void onClick(View v)
@@ -109,7 +109,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                                 imm.hideSoftInputFromWindow(
                                         getView().getWindowToken(), 0);
 
-                                listener.onUpdate(rowID);
+                                listener.onUpdate();
                             }
                         };
 

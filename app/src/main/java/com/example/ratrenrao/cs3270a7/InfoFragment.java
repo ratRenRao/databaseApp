@@ -126,7 +126,7 @@ public class InfoFragment extends android.app.Fragment
 
     private class LoadCourseTask extends AsyncTask<Long, Object, Cursor>
     {
-        DatabaseHelper databaseHelper =
+        final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         @Override
@@ -164,7 +164,7 @@ public class InfoFragment extends android.app.Fragment
         confirmDelete.show(getFragmentManager(), "confirm delete");
     }
 
-    private DialogFragment confirmDelete =
+    private final DialogFragment confirmDelete =
             new DialogFragment()
             {
                 // create an AlertDialog and return it
@@ -205,7 +205,7 @@ public class InfoFragment extends android.app.Fragment
                                                 }
                                             };
 
-                                    deleteTask.execute(new Long[]{rowID});
+                                    deleteTask.execute(rowID);
                                 }
                             }
                     ).setNegativeButton(R.string.stringCancel, null);
