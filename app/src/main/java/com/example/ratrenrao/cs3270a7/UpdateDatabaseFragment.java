@@ -54,7 +54,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
     public interface UpdateListener
     {
-        void onUpdate();
+        void onUpdated(long id);
     }
 
     private UpdateListener listener;
@@ -109,7 +109,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
                                 imm.hideSoftInputFromWindow(
                                         getView().getWindowToken(), 0);
 
-                                listener.onUpdate();
+                                listener.onUpdated(rowID);
                             }
                         };
 
@@ -137,12 +137,12 @@ public class UpdateDatabaseFragment extends android.app.Fragment
 
     private void saveCourse()
     {
-        DatabaseHelper databaseConnector =
+        DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         if (courseInfoBundle == null)
         {
-            rowID = databaseConnector.insertCourse(
+            rowID = databaseHelper.insertCourse(
                     idEditText.getText().toString(),
                     nameEditText.getText().toString(),
                     courseCodeEditText.getText().toString(),
@@ -151,7 +151,7 @@ public class UpdateDatabaseFragment extends android.app.Fragment
             );
         } else
         {
-            databaseConnector.updateCourse(rowID,
+            databaseHelper.updateCourse(rowID,
                     idEditText.getText().toString(),
                     nameEditText.getText().toString(),
                     courseCodeEditText.getText().toString(),

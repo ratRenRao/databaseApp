@@ -14,7 +14,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 class DatabaseHelper
 {
 
-    public static final String AUTH_TOKEN = "";
+    public static final String AUTH_TOKEN = "14~zvrD78kx23GiCnDCiZkWUFjEQRRL7DsiIudGO1bJ8XGACI2WWQibJqRxk4U1hFgj";
     private static final String DATABASE_NAME = "Courses";
 
     private SQLiteDatabase db;

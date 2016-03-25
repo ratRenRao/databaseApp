@@ -173,11 +173,28 @@ public class CoursesFragment extends ListFragment
         new getCanvasCourses().execute("");
     }
 
-    public void onGetImportAssignments()
+    public void onGetImportAssignments(long id)
     {
-        getFragmentManager().popBackStack();
-        getFragmentManager().popBackStack();
-        new getCourseAssignments().execute("");
+        //getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
+        new getCourseAssignments().execute(Integer.toString(getRowCourseId((int) id)));
+    }
+
+    private int getRowCourseId(int id)
+    {
+        final DatabaseHelper databaseHelper =
+                new DatabaseHelper(getActivity());
+        databaseHelper.open();
+        Cursor course = databaseHelper.getOneCourse(id);
+
+        course.moveToFirst();
+
+        int courseCode = course.getColumnIndex("course_code");
+
+        course.close();
+        databaseHelper.close();
+
+        return courseCode;
     }
 
     private Course[] jsonParse(String rawJson)
@@ -244,7 +261,7 @@ public class CoursesFragment extends ListFragment
                 Course[] courses = jsonParse(result);
                 for (Course course : courses)
                 {
-                    databaseConnector.insertCourse(course.id, course.name, course.courseCode, course.start, course.end);
+                    databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             } catch (Exception ignored)
             {
@@ -269,7 +286,7 @@ public class CoursesFragment extends ListFragment
             try
             {
                 Log.d("Test", params[0]);
-                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + Arrays.toString(params) + "/assignments");
+                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + params[0] + "/assignments");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + AUTH_TOKEN);
@@ -293,6 +310,9 @@ public class CoursesFragment extends ListFragment
         @Override
         protected void onPostExecute(String result)
         {
+            if (result.isEmpty())
+                return;
+
             super.onPostExecute(result);
 
             databaseConnector.open();
@@ -302,7 +322,7 @@ public class CoursesFragment extends ListFragment
                 Course[] courses = jsonParse(result);
                 for (Course course : courses)
                 {
-                    databaseConnector.insertCourse(course.id, course.name, course.courseCode, course.start, course.end);
+                    databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             } catch (Exception ignored)
             {
@@ -318,12 +338,12 @@ public class CoursesFragment extends ListFragment
         String id;
         protected String sisCourseId;
         String name;
-        String courseCode;
-        protected String accountId;
-        String start;
-        String end;
+        String course_code;
+        protected String account_id;
+        String start_at;
+        String end_at;
         protected String syllabusBody;
-        protected String gradingCount;
+        protected String grading_standard_id;
         protected Enrollment[] enrollments;
         protected Calendar calendar;
         protected Term term;
@@ -333,8 +353,8 @@ public class CoursesFragment extends ListFragment
     {
         protected String id;
         protected String name;
-        protected String start;
-        protected String end;
+        protected String start_at;
+        protected String end_at;
     }
 
     protected class Calendar
@@ -346,8 +366,8 @@ public class CoursesFragment extends ListFragment
     {
         protected String type;
         protected String role;
-        protected String finalScore;
-        protected String currentScore;
-        protected String finalGrade;
+        protected String final_score;
+        protected String current_score;
+        protected String final_grade;
     }
 }

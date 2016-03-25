@@ -35,21 +35,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+    }
+
+    @Override
     public void onCourseSelected(long rowId)
     {
         displayCourse(rowId);
     }
 
     @Override
-    public void onCourseLongSelected(long rowId)
+    public void onCourseLongSelected(long id)
     {
-        displayAssignments();
+        displayAssignments(id);
     }
 
-    private void displayAssignments()
+    private void displayAssignments(long id)
     {
-        CoursesFragment clf = new CoursesFragment();
-        clf.onGetImportAssignments();
+        //CoursesFragment clf = new CoursesFragment();
+        new CoursesFragment().onGetImportAssignments(id);
     }
 
     private void displayCourse(long rowId)
@@ -102,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onUpdate()
+    public void onUpdated(long Id)
     {
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
