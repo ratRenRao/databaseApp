@@ -26,9 +26,6 @@ public class AssignmentFragment extends ListFragment
 {
     private CursorAdapter assignmentAdapter;
     private long rowID = -1;
-    private long courseId = -1;
-    private String id, name, dueAt;
-    private Text textId, textName, textDueAt;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
@@ -48,11 +45,11 @@ public class AssignmentFragment extends ListFragment
 
         setEmptyText(getResources().getString(R.string.stringNoAssignments));
 
-        String[] from = new String[]{"name"};
+        String[] from = new String[]{"label"};
         int[] to = new int[]{android.R.id.text1};
 
         assignmentAdapter = new SimpleCursorAdapter(getActivity(),
-                android.R.layout.simple_list_item_1, null, from, to, 0);
+                android.R.layout.activity_list_item, null, from, to, 0);
         setListAdapter(assignmentAdapter);
 
     }
@@ -61,7 +58,6 @@ public class AssignmentFragment extends ListFragment
     public void onResume()
     {
         super.onResume();
-
         new GetAssignmentsDb().execute((Object[]) null);
     }
 

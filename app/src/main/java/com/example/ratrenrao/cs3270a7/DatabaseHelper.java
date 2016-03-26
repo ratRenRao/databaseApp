@@ -106,17 +106,7 @@ class DatabaseHelper
 
     public Cursor getAllAssignments(long id)
     {
-        Cursor result = null;
-        try
-        {
-            result = db.query("assignments", new String[]{"name", "due_at"}, "course_row_id=" + Long.toString(id), null, null, null, null);
-        }
-        catch (SQLException ex)
-        {
-            sqlException = ex;
-        }
-
-        return result;
+        return db.query("assignments", new String[]{"_id", "name", "due_at", "label"}, "course_row_id=" + Long.toString(id), null, null, null, "due_at");
     }
 
     public void insertAssignment(String courseRowId, String id, String name, String due)
@@ -126,6 +116,7 @@ class DatabaseHelper
         newAssignment.put("id", id);
         newAssignment.put("name", name);
         newAssignment.put("due_at", due);
+        newAssignment.put("label", name + ": due " + due);
 
         open();
         db.insert("assignments", null, newAssignment);
@@ -153,10 +144,12 @@ class DatabaseHelper
             db.execSQL(createQuery);
 
             createQuery = "CREATE TABLE assignments("
+                    + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
                     + "course_row_id TEXT,"
                     + "id TEXT,"
                     + "name TEXT,"
-                    + "due_at TEXT);";
+                    + "due_at TEXT,"
+                    + "label TEXT);";
 
             db.execSQL(createQuery);
         }
@@ -176,10 +169,12 @@ class DatabaseHelper
             db.execSQL(createQuery);
 
             createQuery = "CREATE TABLE assignments("
-                    + "course_row_id TEXT"
+                    + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "course_row_id TEXT,"
                     + "id TEXT,"
                     + "name TEXT,"
-                    + "due_at TEXT);";
+                    + "due_at TEXT,"
+                    + "label TEXT);";
 
             db.execSQL(createQuery);
         }

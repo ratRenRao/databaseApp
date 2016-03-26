@@ -151,8 +151,8 @@ public class CoursesFragment extends ListFragment
     {
         setEmptyText(getResources().getString(R.string.stringGettingData));
 
-        getFragmentManager().popBackStack();
-        getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
         new GetCanvasData().execute("");
     }
 
@@ -192,21 +192,21 @@ public class CoursesFragment extends ListFragment
 
     private class GetDbCourse extends AsyncTask<Object, Object, Cursor>
     {
-        final DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         @Override
         protected Cursor doInBackground(Object... params)
         {
-            databaseConnector.open();
-            return databaseConnector.getAllCourses();
+            databaseHelper.open();
+            return databaseHelper.getAllCourses();
         }
 
         @Override
         protected void onPostExecute(Cursor result)
         {
             courseAdapter.changeCursor(result);
-            databaseConnector.close();
+            databaseHelper.close();
             setEmptyText(getResources().getString(R.string.stringNoCourses));
         }
     }
@@ -267,16 +267,6 @@ public class CoursesFragment extends ListFragment
 
             }
 
-            try
-            {
-                for (Course course : courses)
-                {
-                    //new GetAssignmentsApi().execute(Long.parseLong(course.id));
-                }
-            } catch (Exception ignored)
-            {
-
-            }
             updateCourseList();
             databaseHelper.close();
         }

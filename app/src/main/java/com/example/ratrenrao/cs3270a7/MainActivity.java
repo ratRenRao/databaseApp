@@ -66,9 +66,7 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentMainContainer, assignmentFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        transaction.replace(R.id.fragmentMainContainer, assignmentFragment).addToBackStack(null).commit();
     }
 
     private void displayCourse(long rowId)
@@ -81,9 +79,7 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentMainContainer, infoFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        transaction.replace(R.id.fragmentMainContainer, infoFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -101,15 +97,13 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentTransaction transaction =
                 getFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentMainContainer, updateDatabaseFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
+        transaction.replace(R.id.fragmentMainContainer, updateDatabaseFragment).addToBackStack(null).commit();
     }
 
     @Override
     public void onCourseDelete()
     {
-        getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
 
         coursesFragment.updateCourseList();
     }
@@ -123,8 +117,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onUpdated(long Id)
     {
-        getFragmentManager().popBackStack();
-        getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
+        //getFragmentManager().popBackStack();
         coursesFragment.updateCourseList();
     }
 }
