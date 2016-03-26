@@ -1,31 +1,18 @@
 package com.example.ratrenrao.cs3270a7;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ListFragment;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,6 +26,9 @@ public class AssignmentFragment extends ListFragment
 {
     private CursorAdapter assignmentAdapter;
     private long rowID = -1;
+    private long courseId = -1;
+    private String id, name, dueAt;
+    private Text textId, textName, textDueAt;
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState)
@@ -64,19 +54,21 @@ public class AssignmentFragment extends ListFragment
         assignmentAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.simple_list_item_1, null, from, to, 0);
         setListAdapter(assignmentAdapter);
+
     }
 
     public void updateAssignmentList()
     {
-        new getCourseAssignmentsTask().execute(Long.toString(rowID));
+        new GetAssignmentsDb().execute(Long.toString(rowID));
     }
 
     @Override
     public void onResume()
     {
         super.onResume();
-        new GetAssignmentTask().execute((Object[]) null);
-        new getCourseAssignmentsTask().execute(Long.toString(rowID));
+
+        new LoadCourseTask().execute(rowID);
+
     }
 
     @Override
@@ -89,6 +81,12 @@ public class AssignmentFragment extends ListFragment
             cursor.close();
 
         super.onStop();
+    }
+
+    private void GetData()
+    {
+        new GetAssignmentsApi().execute(courseId);
+        new GetAssignmentsDb().execute((Object[]) null);
     }
 
     private Assignment[] jsonParse(String rawJson)
@@ -108,27 +106,37 @@ public class AssignmentFragment extends ListFragment
         return assignments;
     }
 
-    private class GetAssignmentTask extends AsyncTask<Object, Object, Cursor>
+    private class LoadCourseTask extends AsyncTask<Long, Object, Cursor>
     {
-        final DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         @Override
-        protected Cursor doInBackground(Object... params)
+        protected Cursor doInBackground(Long... params)
         {
-            databaseConnector.open();
-            return databaseConnector.getAllAssignments(rowID);
+            databaseHelper.open();
+            return databaseHelper.getOneCourse(params[0]);
         }
 
         @Override
         protected void onPostExecute(Cursor result)
         {
-            assignmentAdapter.changeCursor(result);
-            databaseConnector.close();
+            super.onPostExecute(result);
+            result.moveToFirst();
+
+            int idIndex = result.getColumnIndex("id");
+            String courseIdResult = result.getString(idIndex);
+            courseId = Long.parseLong(courseIdResult);
+
+            result.close();
+            databaseHelper.close();
+
+            new GetAssignmentsApi().execute(courseId);
+            new GetAssignmentsDb().execute((Object[]) null);
         }
     }
 
-    protected class getCourseAssignmentsTask extends AsyncTask<String, Integer, String>
+    protected class GetAssignmentsApi extends AsyncTask<Long, Integer, String>
     {
         final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
@@ -137,7 +145,7 @@ public class AssignmentFragment extends ListFragment
         String rawJSON = "";
 
         @Override
-        protected String doInBackground(String... params)
+        protected String doInBackground(Long... params)
         {
             try
             {
@@ -186,21 +194,25 @@ public class AssignmentFragment extends ListFragment
             updateAssignmentList();
             databaseHelper.close();
         }
+    }
 
+    private class GetAssignmentsDb extends AsyncTask<Object, Object, Cursor>
+    {
+        final DatabaseHelper databaseHelper =
+                new DatabaseHelper(getActivity());
 
-        private int getRowCourseId(int id)
+        @Override
+        protected Cursor doInBackground(Object... params)
         {
-            // databaseHelper.open();
-            Cursor course = databaseHelper.getOneCourse(id);
+            databaseHelper.open();
+            return databaseHelper.getAllAssignments(rowID);
+        }
 
-            course.moveToFirst();
-
-            int courseCode = course.getColumnIndex("course_code");
-
-            course.close();
-            //databaseHelper.close();
-
-            return courseCode;
+        @Override
+        protected void onPostExecute(Cursor result)
+        {
+            assignmentAdapter.changeCursor(result);
+            databaseHelper.close();
         }
     }
 
