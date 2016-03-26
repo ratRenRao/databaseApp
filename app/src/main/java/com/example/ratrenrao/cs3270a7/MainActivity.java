@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements
     public static final String ROW_ID = "row_id";
 
     private CoursesFragment coursesFragment;
+    private AssignmentFragment assignmentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,15 +48,27 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCourseLongSelected(long id)
+    public void onCourseLongSelected(long rowId)
     {
-        displayAssignments(id);
+        displayAssignments(rowId);
     }
 
-    private void displayAssignments(long id)
+    private void displayAssignments(long rowId)
     {
         //CoursesFragment clf = new CoursesFragment();
-        new CoursesFragment().onGetImportAssignments(id);
+        //new CoursesFragment().onGetImportAssignments(rowId);
+
+        assignmentFragment = new AssignmentFragment();
+
+        Bundle arguments = new Bundle();
+        arguments.putLong(ROW_ID, rowId);
+        assignmentFragment.setArguments(arguments);
+
+        FragmentTransaction transaction =
+                getFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentMainContainer, assignmentFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void displayCourse(long rowId)

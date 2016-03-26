@@ -23,7 +23,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Arrays;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -64,7 +63,7 @@ public class CoursesFragment extends ListFragment
         setRetainInstance(true);
         setHasOptionsMenu(true);
 
-        setEmptyText(getResources().getString(R.string.stringNoResult));
+        setEmptyText(getResources().getString(R.string.stringNoCourses));
 
         ListView courseListView = getListView();
         courseListView.setOnItemClickListener(viewCourseListener);
@@ -177,25 +176,11 @@ public class CoursesFragment extends ListFragment
     {
         //getFragmentManager().popBackStack();
         //getFragmentManager().popBackStack();
-        new getCourseAssignments().execute(Integer.toString(getRowCourseId((int) id)));
+        new GetCourseTask().execute((Object[]) null);
+        new getCourseAssignments().execute(Long.toString(id));
     }
 
-    private int getRowCourseId(int id)
-    {
-        final DatabaseHelper databaseHelper =
-                new DatabaseHelper(getActivity());
-        databaseHelper.open();
-        Cursor course = databaseHelper.getOneCourse(id);
 
-        course.moveToFirst();
-
-        int courseCode = course.getColumnIndex("course_code");
-
-        course.close();
-        databaseHelper.close();
-
-        return courseCode;
-    }
 
     private Course[] jsonParse(String rawJson)
     {
@@ -217,7 +202,7 @@ public class CoursesFragment extends ListFragment
 
     public class getCanvasCourses extends AsyncTask<String, Integer, String>
     {
-        final DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
@@ -254,27 +239,27 @@ public class CoursesFragment extends ListFragment
         {
             super.onPostExecute(result);
 
-            databaseConnector.open();
+            databaseHelper.open();
 
             try
             {
                 Course[] courses = jsonParse(result);
                 for (Course course : courses)
                 {
-                    databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
+                    databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             } catch (Exception ignored)
             {
 
             }
             updateCourseList();
-            databaseConnector.close();
+            databaseHelper.close();
         }
     }
 
     public class getCourseAssignments extends AsyncTask<String, Integer, String>
     {
-        final DatabaseHelper databaseConnector =
+        final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
@@ -285,7 +270,6 @@ public class CoursesFragment extends ListFragment
         {
             try
             {
-                Log.d("Test", params[0]);
                 URL url = new URL("https://weber.instructure.com/api/v1/courses/" + params[0] + "/assignments");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
@@ -315,21 +299,37 @@ public class CoursesFragment extends ListFragment
 
             super.onPostExecute(result);
 
-            databaseConnector.open();
+            //databaseHelper.open();
 
             try
             {
                 Course[] courses = jsonParse(result);
                 for (Course course : courses)
                 {
-                    databaseConnector.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
+                    databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
                 }
             } catch (Exception ignored)
             {
 
             }
             updateCourseList();
-            databaseConnector.close();
+            databaseHelper.close();
+        }
+
+
+        private int getRowCourseId(int id)
+        {
+           // databaseHelper.open();
+            Cursor course = databaseHelper.getOneCourse(id);
+
+            course.moveToFirst();
+
+            int courseCode = course.getColumnIndex("course_code");
+
+            course.close();
+            //databaseHelper.close();
+
+            return courseCode;
         }
     }
 

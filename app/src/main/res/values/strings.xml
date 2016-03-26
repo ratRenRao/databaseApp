@@ -19,7 +19,8 @@
     <string name="stringCourseCode">Course Code</string>
     <string name="stringStart">Starts At</string>
     <string name="stringEnd">Ends At</string>
-    <string name="stringNoResult">No Courses</string>
+    <string name="stringNoCourses">No Courses</string>
+    <string name="stringNoAssignments">No Assignments</string>
     <string name="stringError">You must enter a course name</string>
     <string name="stringConfirmMessage">This will permanently delete the course</string>
     <string name="stringConfirm">Are You Sure?</string>
