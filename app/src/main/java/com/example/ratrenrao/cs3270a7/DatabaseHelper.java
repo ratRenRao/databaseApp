@@ -20,10 +20,13 @@ class DatabaseHelper
     private SQLiteDatabase db;
     private final DatabaseOpenHelper databaseOpenHelper;
 
+    private SQLException sqlException;
+
     public DatabaseHelper(Context context)
     {
         databaseOpenHelper =
                 new DatabaseOpenHelper(context);
+
     }
 
     public SQLiteDatabase open() throws SQLException
@@ -82,6 +85,20 @@ class DatabaseHelper
         close();
     }
 
+    public void deleteAllCourses()
+    {
+        open();
+        db.delete("courses", null, null);
+        close();
+    }
+
+    public void deleteAllAssignments()
+    {
+        open();
+        db.delete("assignments", null, null);
+        close();
+    }
+
     public Cursor getAllCourses()
     {
         return db.query("courses", new String[]{"_id", "name"}, null, null, null, null, "name");
@@ -89,20 +106,30 @@ class DatabaseHelper
 
     public Cursor getAllAssignments(long id)
     {
-        return db.query("assignments", null, "_id=" + Long.toString(id), null, null, null, null);
+        Cursor result = null;
+        try
+        {
+            result = db.query("assignments", new String[]{"name", "due_at"}, "course_row_id=" + Long.toString(id), null, null, null, null);
+        }
+        catch (SQLException ex)
+        {
+            sqlException = ex;
+        }
+
+        return result;
     }
 
-    public long insertAssignment(String id, String name, String due)
+    public void insertAssignment(String courseRowId, String id, String name, String due)
     {
         ContentValues newAssignment = new ContentValues();
+        newAssignment.put("course_row_id", courseRowId);
         newAssignment.put("id", id);
         newAssignment.put("name", name);
         newAssignment.put("due_at", due);
 
         open();
-        long _id = db.insert("assignments", null, newAssignment);
+        db.insert("assignments", null, newAssignment);
         close();
-        return _id;
     }
 
     private class DatabaseOpenHelper extends SQLiteOpenHelper
@@ -126,6 +153,7 @@ class DatabaseHelper
             db.execSQL(createQuery);
 
             createQuery = "CREATE TABLE assignments("
+                    + "course_row_id TEXT,"
                     + "id TEXT,"
                     + "name TEXT,"
                     + "due_at TEXT);";
@@ -137,6 +165,23 @@ class DatabaseHelper
         public void onUpgrade(SQLiteDatabase db, int oldVersion,
                               int newVersion)
         {
+            String createQuery = "CREATE TABLE courses("
+                    + "_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+                    + "id TEXT,"
+                    + "name TEXT,"
+                    + "course_code TEXT,"
+                    + "start_at TEXT,"
+                    + "end_at TEXT);";
+
+            db.execSQL(createQuery);
+
+            createQuery = "CREATE TABLE assignments("
+                    + "course_row_id TEXT"
+                    + "id TEXT,"
+                    + "name TEXT,"
+                    + "due_at TEXT);";
+
+            db.execSQL(createQuery);
         }
     }
 }

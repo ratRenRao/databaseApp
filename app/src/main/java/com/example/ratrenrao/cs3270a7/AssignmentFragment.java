@@ -57,18 +57,12 @@ public class AssignmentFragment extends ListFragment
 
     }
 
-    public void updateAssignmentList()
-    {
-        new GetAssignmentsDb().execute(Long.toString(rowID));
-    }
-
     @Override
     public void onResume()
     {
         super.onResume();
 
-        new LoadCourseTask().execute(rowID);
-
+        new GetAssignmentsDb().execute((Object[]) null);
     }
 
     @Override
@@ -81,119 +75,6 @@ public class AssignmentFragment extends ListFragment
             cursor.close();
 
         super.onStop();
-    }
-
-    private void GetData()
-    {
-        new GetAssignmentsApi().execute(courseId);
-        new GetAssignmentsDb().execute((Object[]) null);
-    }
-
-    private Assignment[] jsonParse(String rawJson)
-    {
-        GsonBuilder gsonb = new GsonBuilder();
-        Gson gson = gsonb.create();
-
-        Assignment[] assignments = null;
-
-        try
-        {
-            assignments = gson.fromJson(rawJson, Assignment[].class);
-        } catch (Exception ignored)
-        {
-
-        }
-        return assignments;
-    }
-
-    private class LoadCourseTask extends AsyncTask<Long, Object, Cursor>
-    {
-        final DatabaseHelper databaseHelper =
-                new DatabaseHelper(getActivity());
-
-        @Override
-        protected Cursor doInBackground(Long... params)
-        {
-            databaseHelper.open();
-            return databaseHelper.getOneCourse(params[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Cursor result)
-        {
-            super.onPostExecute(result);
-            result.moveToFirst();
-
-            int idIndex = result.getColumnIndex("id");
-            String courseIdResult = result.getString(idIndex);
-            courseId = Long.parseLong(courseIdResult);
-
-            result.close();
-            databaseHelper.close();
-
-            new GetAssignmentsApi().execute(courseId);
-            new GetAssignmentsDb().execute((Object[]) null);
-        }
-    }
-
-    protected class GetAssignmentsApi extends AsyncTask<Long, Integer, String>
-    {
-        final DatabaseHelper databaseHelper =
-                new DatabaseHelper(getActivity());
-
-        final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
-        String rawJSON = "";
-
-        @Override
-        protected String doInBackground(Long... params)
-        {
-            try
-            {
-                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + params[0] + "/assignments");
-                HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Authorization", "Bearer " + AUTH_TOKEN);
-                conn.connect();
-                int status = conn.getResponseCode();
-                switch (status)
-                {
-                    case 200:
-                    case 201:
-                        BufferedReader br =
-                                new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        rawJSON = br.readLine();
-                }
-            } catch (IOException e)
-            {
-                Log.d("test", e.getMessage());
-            }
-            return rawJSON;
-        }
-
-        @Override
-        protected void onPostExecute(String result)
-        {
-            if (result.isEmpty())
-                return;
-
-            super.onPostExecute(result);
-
-            //databaseHelper.open();
-
-            try
-            {
-                Assignment[] assignments = jsonParse(result);
-                for (Assignment assignment : assignments)
-                {
-                    databaseHelper.insertAssignment(assignment.id, assignment.name, assignment.due_at);
-                }
-            } catch (Exception ignored)
-            {
-
-            }
-            updateAssignmentList();
-            databaseHelper.close();
-        }
     }
 
     private class GetAssignmentsDb extends AsyncTask<Object, Object, Cursor>
@@ -216,10 +97,4 @@ public class AssignmentFragment extends ListFragment
         }
     }
 
-    class Assignment
-    {
-        String id;
-        String name;
-        String due_at;
-    }
 }

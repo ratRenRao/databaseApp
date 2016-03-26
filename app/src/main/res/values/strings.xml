@@ -20,6 +20,7 @@
     <string name="stringStart">Starts At</string>
     <string name="stringEnd">Ends At</string>
     <string name="stringNoCourses">No Courses</string>
+    <string name="stringGettingData">Getting Data...</string>
     <string name="stringNoAssignments">No Assignments</string>
     <string name="stringError">You must enter a course name</string>
     <string name="stringConfirmMessage">This will permanently delete the course</string>

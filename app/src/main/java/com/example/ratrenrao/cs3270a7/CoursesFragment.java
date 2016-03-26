@@ -28,6 +28,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class CoursesFragment extends ListFragment
 {
+    private Course[] courses;
+
     public interface CourseListFragmentListener
     {
         void onCourseSelected(long rowID);
@@ -102,27 +104,7 @@ public class CoursesFragment extends ListFragment
     public void onResume()
     {
         super.onResume();
-        new GetCourseTask().execute((Object[]) null);
-    }
-
-    private class GetCourseTask extends AsyncTask<Object, Object, Cursor>
-    {
-        final DatabaseHelper databaseConnector =
-                new DatabaseHelper(getActivity());
-
-        @Override
-        protected Cursor doInBackground(Object... params)
-        {
-            databaseConnector.open();
-            return databaseConnector.getAllCourses();
-        }
-
-        @Override
-        protected void onPostExecute(Cursor result)
-        {
-            courseAdapter.changeCursor(result);
-            databaseConnector.close();
-        }
+        new GetDbCourse().execute((Object[]) null);
     }
 
     @Override
@@ -140,7 +122,7 @@ public class CoursesFragment extends ListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-        super.onCreateOptionsMenu(menu, inflater);
+          super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.course_menu, menu);
     }
 
@@ -162,45 +144,74 @@ public class CoursesFragment extends ListFragment
 
     public void updateCourseList()
     {
-        new GetCourseTask().execute((Object[]) null);
+        new GetDbCourse().execute((Object[]) null);
     }
 
     private void onImportCourses()
     {
+        setEmptyText(getResources().getString(R.string.stringGettingData));
+
         getFragmentManager().popBackStack();
         getFragmentManager().popBackStack();
-        new getCanvasCourses().execute("");
+        new GetCanvasData().execute("");
     }
 
-    public void onGetImportAssignments(long id)
+    private Course[] parseCourseJson(String rawJson)
     {
-        //getFragmentManager().popBackStack();
-        //getFragmentManager().popBackStack();
-        new GetCourseTask().execute((Object[]) null);
-        new getCourseAssignments().execute(Long.toString(id));
-    }
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
 
-
-
-    private Course[] jsonParse(String rawJson)
-    {
-        GsonBuilder gsonb = new GsonBuilder();
-        Gson gson = gsonb.create();
-
-        Course[] courses = null;
+        Course[] parsedCourses = null;
 
         try
         {
-            courses = gson.fromJson(rawJson, Course[].class);
+            parsedCourses = gson.fromJson(rawJson, Course[].class);
         } catch (Exception ignored)
         {
 
         }
-        return courses;
+        return parsedCourses;
     }
 
+    private Assignment[] parseAssignmentJson(String rawJson)
+    {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
 
-    public class getCanvasCourses extends AsyncTask<String, Integer, String>
+        Assignment[] parsedAssignments = null;
+
+        try
+        {
+            parsedAssignments = gson.fromJson(rawJson, Assignment[].class);
+        } catch (Exception ignored)
+        {
+
+        }
+        return parsedAssignments;
+    }
+
+    private class GetDbCourse extends AsyncTask<Object, Object, Cursor>
+    {
+        final DatabaseHelper databaseConnector =
+                new DatabaseHelper(getActivity());
+
+        @Override
+        protected Cursor doInBackground(Object... params)
+        {
+            databaseConnector.open();
+            return databaseConnector.getAllCourses();
+        }
+
+        @Override
+        protected void onPostExecute(Cursor result)
+        {
+            courseAdapter.changeCursor(result);
+            databaseConnector.close();
+            setEmptyText(getResources().getString(R.string.stringNoCourses));
+        }
+    }
+
+    public class GetCanvasData extends AsyncTask<String, Integer, String>
     {
         final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
@@ -243,10 +254,24 @@ public class CoursesFragment extends ListFragment
 
             try
             {
-                Course[] courses = jsonParse(result);
+                databaseHelper.deleteAllCourses();
+                databaseHelper.deleteAllAssignments();
+                courses = parseCourseJson(result);
                 for (Course course : courses)
                 {
-                    databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
+                    long rowId = databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
+                    new GetAssignmentsApi().execute(new Long[] {Long.parseLong(course.id), rowId});
+                }
+            } catch (Exception ignored)
+            {
+
+            }
+
+            try
+            {
+                for (Course course : courses)
+                {
+                    //new GetAssignmentsApi().execute(Long.parseLong(course.id));
                 }
             } catch (Exception ignored)
             {
@@ -257,20 +282,23 @@ public class CoursesFragment extends ListFragment
         }
     }
 
-    public class getCourseAssignments extends AsyncTask<String, Integer, String>
+    protected class GetAssignmentsApi extends AsyncTask<Long, Integer, String>
     {
         final DatabaseHelper databaseHelper =
                 new DatabaseHelper(getActivity());
 
         final String AUTH_TOKEN = DatabaseHelper.AUTH_TOKEN;
+        private String courseId, rowId;
         String rawJSON = "";
 
         @Override
-        protected String doInBackground(String... params)
+        protected String doInBackground(Long... params)
         {
             try
             {
-                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + params[0] + "/assignments");
+                courseId = Long.toString(params[0]);
+                rowId = Long.toString(params[1]);
+                URL url = new URL("https://weber.instructure.com/api/v1/courses/" + courseId + "/assignments");
                 HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
                 conn.setRequestProperty("Authorization", "Bearer " + AUTH_TOKEN);
@@ -299,75 +327,35 @@ public class CoursesFragment extends ListFragment
 
             super.onPostExecute(result);
 
-            //databaseHelper.open();
-
             try
             {
-                Course[] courses = jsonParse(result);
-                for (Course course : courses)
+                Assignment[] assignments = parseAssignmentJson(result);
+                for (Assignment assignment : assignments)
                 {
-                    databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
+                    databaseHelper.insertAssignment(rowId, assignment.id, assignment.name, assignment.due_at);
                 }
             } catch (Exception ignored)
             {
 
             }
-            updateCourseList();
             databaseHelper.close();
-        }
-
-
-        private int getRowCourseId(int id)
-        {
-           // databaseHelper.open();
-            Cursor course = databaseHelper.getOneCourse(id);
-
-            course.moveToFirst();
-
-            int courseCode = course.getColumnIndex("course_code");
-
-            course.close();
-            //databaseHelper.close();
-
-            return courseCode;
         }
     }
 
     class Course
     {
         String id;
-        protected String sisCourseId;
         String name;
         String course_code;
-        protected String account_id;
         String start_at;
         String end_at;
-        protected String syllabusBody;
-        protected String grading_standard_id;
-        protected Enrollment[] enrollments;
-        protected Calendar calendar;
-        protected Term term;
     }
 
-    protected class Term
-    {
-        protected String id;
-        protected String name;
-        protected String start_at;
-        protected String end_at;
-    }
 
-    protected class Calendar
+    protected class Assignment
     {
-        protected String ics;
-    }
-
-    protected class Enrollment
-    {
-        protected String type;
-        protected String role;
-        protected String final_score;
-        protected String current_score;
-        protected String final_grade;
+        String id;
+        String name;
+        String due_at;
     }
 }
