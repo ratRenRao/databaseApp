@@ -30,9 +30,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // Checks the orientation of the screen
         if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            changeToLandscape();
+            //changeToLandscape();
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
-            changeToPortrait();
+            //changeToPortrait();
         }
     }
 
@@ -45,13 +45,16 @@ public class MainActivity extends AppCompatActivity implements
         if (savedInstanceState != null)
             return;
 
-        if (findViewById(R.id.fragmentMainContainer1) != null)
+        if (findViewById(R.id.fragmentMainContainer) != null)
         {
             coursesFragment = new CoursesFragment();
+            //createAssignmentFragment(1);
+            //createInfoFragment(1);
 
             getFragmentManager().beginTransaction()
-                    .add(R.id.fragmentMainContainer1, coursesFragment, "CF")
-                    .add(R.id.fragmentMainContainer2, new BlankFragment(), "NN")
+                    .add(R.id.fragmentMainContainer, coursesFragment)
+                    .add(R.id.fragmentMainContainer1, new BlankFragment())
+                    .add(R.id.fragmentMainContainer2, new BlankFragment())
                     .commit();
         }
     }
@@ -94,7 +97,9 @@ public class MainActivity extends AppCompatActivity implements
             findViewById(R.id.fragmentMainContainer1).setVisibility(View.VISIBLE);
 
             getFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMainContainer1, infoFragment, "NN")
+                    .replace(R.id.fragmentMainContainer, infoFragment)
+                    .addToBackStack(null)
+                    .replace(R.id.fragmentMainContainer1, new BlankFragment(), "NN")
                     .addToBackStack(null)
                     .replace(R.id.fragmentMainContainer2, assignmentFragment, "AF")
                     .addToBackStack(null)
@@ -111,9 +116,11 @@ public class MainActivity extends AppCompatActivity implements
             findViewById(R.id.fragmentMainContainer2).setVisibility(View.GONE);
 
             getFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMainContainer1, assignmentFragment, "AF")
+                    .replace(R.id.fragmentMainContainer, assignmentFragment, "AF")
                     .addToBackStack(null)
-                    .replace(R.id.fragmentMainContainer2, infoFragment, "NN")
+                    .replace(R.id.fragmentMainContainer1, infoFragment, "IF")
+                    .addToBackStack(null)
+                    .replace(R.id.fragmentMainContainer2, new BlankFragment(), "NN")
                     .addToBackStack(null)
                     .commit();
         }
@@ -125,11 +132,13 @@ public class MainActivity extends AppCompatActivity implements
         createInfoFragment(rowId);
 
         getFragmentManager().beginTransaction()
-            .replace(R.id.fragmentMainContainer1, assignmentFragment, "AF")
-            .addToBackStack(null)
-            .replace(R.id.fragmentMainContainer2, infoFragment, "NN")
-            .addToBackStack(null)
-            .commit();
+                .replace(R.id.fragmentMainContainer, assignmentFragment)
+                .addToBackStack(null)
+                .replace(R.id.fragmentMainContainer1, infoFragment)
+                .addToBackStack(null)
+                .replace(R.id.fragmentMainContainer2, assignmentFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     private void createAssignmentFragment(long rowId)
@@ -147,11 +156,13 @@ public class MainActivity extends AppCompatActivity implements
         createAssignmentFragment(rowId);
 
         getFragmentManager().beginTransaction()
-            .replace(R.id.fragmentMainContainer1, infoFragment, "IF")
-            .addToBackStack(null)
-            .replace(R.id.fragmentMainContainer2, assignmentFragment, "NN")
-            .addToBackStack(null)
-            .commit();
+                .replace(R.id.fragmentMainContainer, infoFragment)
+                .addToBackStack(null)
+                .replace(R.id.fragmentMainContainer1, infoFragment)
+                .addToBackStack(null)
+                .replace(R.id.fragmentMainContainer2, assignmentFragment, "AF")
+                .addToBackStack(null)
+                .commit();
     }
 
     private void createInfoFragment(long rowId)
