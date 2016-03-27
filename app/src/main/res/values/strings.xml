@@ -25,4 +25,7 @@
     <string name="stringError">You must enter a course name</string>
     <string name="stringConfirmMessage">This will permanently delete the course</string>
     <string name="stringConfirm">Are You Sure?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

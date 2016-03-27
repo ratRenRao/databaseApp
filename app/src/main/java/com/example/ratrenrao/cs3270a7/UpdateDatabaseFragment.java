@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 
-public class UpdateDatabaseFragment extends android.app.Fragment
+public class UpdateDatabaseFragment extends Fragment
 {
 
     @Override

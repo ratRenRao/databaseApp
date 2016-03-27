@@ -1,8 +1,10 @@
 package com.example.ratrenrao.cs3270a7;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -149,10 +151,9 @@ public class CoursesFragment extends ListFragment
 
     private void onImportCourses()
     {
+        courseAdapter.changeCursor(null);
         setEmptyText(getResources().getString(R.string.stringGettingData));
 
-        //getFragmentManager().popBackStack();
-        //getFragmentManager().popBackStack();
         new GetCanvasData().execute("");
     }
 
