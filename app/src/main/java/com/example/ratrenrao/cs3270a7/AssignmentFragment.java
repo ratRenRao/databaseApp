@@ -1,27 +1,12 @@
 package com.example.ratrenrao.cs3270a7;
 
-import android.app.ActionBar;
 import android.app.ListFragment;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.SimpleCursorAdapter;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import org.w3c.dom.Text;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-
-import javax.net.ssl.HttpsURLConnection;
-
 
 public class AssignmentFragment extends ListFragment
 {
@@ -52,7 +37,6 @@ public class AssignmentFragment extends ListFragment
         assignmentAdapter = new SimpleCursorAdapter(getActivity(),
                 android.R.layout.activity_list_item, null, from, to, 0);
         setListAdapter(assignmentAdapter);
-
     }
 
     @Override

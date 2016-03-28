@@ -2,7 +2,6 @@ package com.example.ratrenrao.cs3270a7;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -11,7 +10,6 @@ import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 
 public class InfoFragment extends Fragment
@@ -182,7 +179,6 @@ public class InfoFragment extends Fragment
                     builder.setTitle(R.string.stringConfirm);
                     builder.setMessage(R.string.stringConfirmMessage);
 
-                    // provide an OK button that simply dismisses the dialog
                     builder.setPositiveButton(R.string.stringDelete,
                             new DialogInterface.OnClickListener()
                             {
@@ -190,7 +186,7 @@ public class InfoFragment extends Fragment
                                 public void onClick(
                                         DialogInterface dialog, int button)
                                 {
-                                    final DatabaseHelper databaseConnector =
+                                    final DatabaseHelper databaseHelper =
                                             new DatabaseHelper(getActivity());
 
                                     AsyncTask<Long, Object, Object> deleteTask =
@@ -199,7 +195,7 @@ public class InfoFragment extends Fragment
                                                 @Override
                                                 protected Object doInBackground(Long... params)
                                                 {
-                                                    databaseConnector.deleteCourse(params[0]);
+                                                    databaseHelper.deleteCourse(params[0]);
                                                     return null;
                                                 }
 

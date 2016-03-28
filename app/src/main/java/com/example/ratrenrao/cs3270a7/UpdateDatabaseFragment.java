@@ -19,6 +19,17 @@ import android.widget.EditText;
 public class UpdateDatabaseFragment extends Fragment
 {
 
+    private UpdateListener listener;
+
+    private long rowID;
+    private Bundle courseInfoBundle;
+
+    private EditText editId;
+    private EditText editName;
+    private EditText editCourseCode;
+    private EditText editStart;
+    private EditText editEnd;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -29,22 +40,22 @@ public class UpdateDatabaseFragment extends Fragment
 
         View view = inflater.inflate(R.layout.fragment_update_database, container, false);
 
-        idEditText = (EditText) view.findViewById(R.id.editId);
-        nameEditText = (EditText) view.findViewById(R.id.editName);
-        courseCodeEditText = (EditText) view.findViewById(R.id.editCourseCode);
-        startEditText = (EditText) view.findViewById(R.id.editStart);
-        endEditText = (EditText) view.findViewById(R.id.editEnd);
+        editId = (EditText) view.findViewById(R.id.editId);
+        editName = (EditText) view.findViewById(R.id.editName);
+        editCourseCode = (EditText) view.findViewById(R.id.editCourseCode);
+        editStart = (EditText) view.findViewById(R.id.editStart);
+        editEnd = (EditText) view.findViewById(R.id.editEnd);
 
         courseInfoBundle = getArguments();
 
         if (courseInfoBundle != null)
         {
             rowID = courseInfoBundle.getLong(MainActivity.ROW_ID);
-            idEditText.setText(courseInfoBundle.getString("id"));
-            nameEditText.setText(courseInfoBundle.getString("name"));
-            courseCodeEditText.setText(courseInfoBundle.getString("course_code"));
-            startEditText.setText(courseInfoBundle.getString("start_at"));
-            endEditText.setText(courseInfoBundle.getString("end_at"));
+            editId.setText(courseInfoBundle.getString("id"));
+            editName.setText(courseInfoBundle.getString("name"));
+            editCourseCode.setText(courseInfoBundle.getString("course_code"));
+            editStart.setText(courseInfoBundle.getString("start_at"));
+            editEnd.setText(courseInfoBundle.getString("end_at"));
         }
 
         Button buttonSave =
@@ -57,17 +68,6 @@ public class UpdateDatabaseFragment extends Fragment
     {
         void onUpdated(long id);
     }
-
-    private UpdateListener listener;
-
-    private long rowID;
-    private Bundle courseInfoBundle;
-
-    private EditText idEditText;
-    private EditText nameEditText;
-    private EditText courseCodeEditText;
-    private EditText startEditText;
-    private EditText endEditText;
 
     @Override
     public void onAttach(Context context)
@@ -89,7 +89,7 @@ public class UpdateDatabaseFragment extends Fragment
         @Override
         public void onClick(View v)
         {
-            if (nameEditText.getText().toString().trim().length() != 0)
+            if (editName.getText().toString().trim().length() != 0)
             {
                 AsyncTask<Object, Object, Object> savecourseTask =
                         new AsyncTask<Object, Object, Object>()
@@ -144,20 +144,20 @@ public class UpdateDatabaseFragment extends Fragment
         if (courseInfoBundle == null)
         {
             rowID = databaseHelper.insertCourse(
-                    idEditText.getText().toString(),
-                    nameEditText.getText().toString(),
-                    courseCodeEditText.getText().toString(),
-                    startEditText.getText().toString(),
-                    endEditText.getText().toString()
+                    editId.getText().toString(),
+                    editName.getText().toString(),
+                    editCourseCode.getText().toString(),
+                    editStart.getText().toString(),
+                    editEnd.getText().toString()
             );
         } else
         {
             databaseHelper.updateCourse(rowID,
-                    idEditText.getText().toString(),
-                    nameEditText.getText().toString(),
-                    courseCodeEditText.getText().toString(),
-                    startEditText.getText().toString(),
-                    endEditText.getText().toString());
+                    editId.getText().toString(),
+                    editName.getText().toString(),
+                    editCourseCode.getText().toString(),
+                    editStart.getText().toString(),
+                    editEnd.getText().toString());
         }
     }
 }

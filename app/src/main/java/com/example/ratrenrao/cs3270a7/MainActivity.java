@@ -1,15 +1,11 @@
 package com.example.ratrenrao.cs3270a7;
 
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         CoursesFragment.CourseListFragmentListener,
@@ -36,27 +32,25 @@ public class MainActivity extends AppCompatActivity implements
         if (findViewById(R.id.fragmentMainContainer) != null)
         {
             coursesFragment = new CoursesFragment();
-            //createAssignmentFragment(1);
-            //createInfoFragment(1);
 
             getFragmentManager().beginTransaction()
                     .add(R.id.fragmentMainContainer, coursesFragment)
-                    //.add(R.id.fragmentMainContainer2, new BlankFragment())
                     .commit();
         }
     }
-
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        // Checks the orientation of the screen
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
             landscape = true;
             changeToLandscape();
             findViewById(R.id.fragmentMainContainer2).setVisibility(View.VISIBLE);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+        }
+        else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+        {
             landscape = false;
             changeToPortrait();
             findViewById(R.id.fragmentMainContainer2).setVisibility(View.GONE);
@@ -77,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements
             getFragmentManager().popBackStack();
             getFragmentManager().popBackStack();
         }
-
     }
 
     @Override
@@ -104,21 +97,18 @@ public class MainActivity extends AppCompatActivity implements
                 .add(R.id.fragmentMainContainer2, new BlankFragment())
                 .commit();
 
-        if (getFragmentManager().findFragmentByTag("AF") != null)
+        if (getFragmentManager().findFragmentByTag("IF") != null)
+        {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.fragmentMainContainer2, assignmentFragment)
+                .addToBackStack(null)
+                .commit();
+        }
+        else if (getFragmentManager().findFragmentByTag("AF") != null)
         {
             getFragmentManager().beginTransaction()
                     .replace(R.id.fragmentMainContainer2, infoFragment)
-                    .addToBackStack(null)
-                    .commit();
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMainContainer, assignmentFragment, "AF")
-                    .addToBackStack(null)
-                    .commit();
-        }
-        else if (getFragmentManager().findFragmentByTag("IF") != null)
-        {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMainContainer2, assignmentFragment)
+                    .replace(R.id.fragmentMainContainer, assignmentFragment)
                     .addToBackStack(null)
                     .commit();
         }
@@ -126,10 +116,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private void changeToPortrait()
     {
-        if (getFragmentManager().findFragmentByTag("AF") != null)
-        {
-            //getFragmentManager().popBackStack();
-        }
         getFragmentManager().popBackStack();
 
         getFragmentManager().beginTransaction()
@@ -150,12 +136,6 @@ public class MainActivity extends AppCompatActivity implements
                     .addToBackStack(null)
                     .commit();
 
-            /*
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMainContainer2, assignmentFragment, "AF")
-                    .addToBackStack(null)
-                    .commit();
-                    */
         }
         else
         {
@@ -241,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onUpdated(long Id)
     {
+        getFragmentManager().popBackStack();
         coursesFragment.updateCourseList();
     }
 }

@@ -1,10 +1,8 @@
 package com.example.ratrenrao.cs3270a7;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -124,7 +122,7 @@ public class CoursesFragment extends ListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
-          super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.course_menu, menu);
     }
 
@@ -208,7 +206,6 @@ public class CoursesFragment extends ListFragment
         {
             courseAdapter.changeCursor(result);
             databaseHelper.close();
-            setEmptyText(getResources().getString(R.string.stringNoCourses));
         }
     }
 
@@ -261,7 +258,7 @@ public class CoursesFragment extends ListFragment
                 for (Course course : courses)
                 {
                     long rowId = databaseHelper.insertCourse(course.id, course.name, course.course_code, course.start_at, course.end_at);
-                    new GetAssignmentsApi().execute(new Long[] {Long.parseLong(course.id), rowId});
+                    new GetAssignmentsApi().execute(new Long[]{Long.parseLong(course.id), rowId});
                 }
             } catch (Exception ignored)
             {
@@ -341,7 +338,6 @@ public class CoursesFragment extends ListFragment
         String start_at;
         String end_at;
     }
-
 
     protected class Assignment
     {
